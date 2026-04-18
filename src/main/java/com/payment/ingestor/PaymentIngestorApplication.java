@@ -7,6 +7,7 @@ import com.payment.ingestor.entity.AccountEntity;
 import com.payment.ingestor.repository.AccountRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @SpringBootApplication
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentIngestorApplication {
     private final AccountRepository accountRepository;
 

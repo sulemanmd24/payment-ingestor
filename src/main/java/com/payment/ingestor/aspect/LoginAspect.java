@@ -19,11 +19,12 @@ public class LoginAspect {
     }
 
     @Around("PaymentIngestor()")
-    public void  loginPaymentIngestor(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object loginPaymentIngestor(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         Object proceed = joinPoint.proceed(); // Executes the actual method
         long executionTime = System.currentTimeMillis() - start;
         logger.info(joinPoint.getSignature() + " executed in " + executionTime + "ms" + proceed);
+        return proceed; // Return the actual result from the method
     }
 
 }

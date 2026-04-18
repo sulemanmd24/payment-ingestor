@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RestController
@@ -31,9 +33,9 @@ public class PaymentIngestorController {
 
     @GetMapping("/accounts/{accountId}")
     public ResponseEntity<Account> getAccount(@PathVariable String accountId) {
-
-      final Account account=  paymentIngestorService.getAccount(accountId);
-
+        // Decode URL-encoded accountId (e.g., 20-15-88%2F43917265 -> 20-15-88/43917265)
+        String decodedAccountId = URLDecoder.decode(accountId, StandardCharsets.UTF_8);
+        final Account account = paymentIngestorService.getAccount(decodedAccountId);
         return ResponseEntity.ok(account);
     }
 
