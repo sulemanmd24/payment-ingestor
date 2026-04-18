@@ -5,7 +5,7 @@
     "accountType": "PERSONAL",
     "status":      "ACTIVE",
     "currency":    "GBP",
-    "openedDate":  "2018-03-15"
+    "openedDate": "2018-03-15"
   },
   {
     "accountId":   "20-15-88/61082934",
@@ -61,8 +61,7 @@
     "accountType": "PERSONAL",
     "status":      "SUSPENDED",
     "currency":    "GBP",
-    "openedDate":  "2017-06-01",
-    "_note": "SUSPENDED — use this account to test the 422 suspended account response"
+    "openedDate":  "2017-06-01"
   },
   {
     "accountId":   "09-01-28/11223344",
