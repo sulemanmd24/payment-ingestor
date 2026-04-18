@@ -1,25 +1,21 @@
-package com.payment.ingestor.entity;
+package com.payment.ingestor.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "accounts")
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountEntity {
+@Data
+public class PaymentRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String accountId;
 
     private String accountName;
 
-    @Enumerated(EnumType.STRING)
     private String accountType;
 
     private String status;
@@ -27,5 +23,4 @@ public class AccountEntity {
     private String currency;
 
     private LocalDate openedDate;
-
 }
