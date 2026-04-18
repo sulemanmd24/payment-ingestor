@@ -1,5 +1,8 @@
 package com.payment.ingestor.dto;
 
+import com.payment.ingestor.util.AccountStatus;
+import com.payment.ingestor.util.AccountType;
+import com.payment.ingestor.util.Currency;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,11 +18,11 @@ public class Account {
 
     private String accountName;
 
-    private String accountType;
+    private AccountType accountType;
 
-    private String status;
+    private AccountStatus status;
 
-    private String currency;
+    private Currency currency;
 
     private LocalDate openedDate;
 

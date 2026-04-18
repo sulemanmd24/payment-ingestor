@@ -1,5 +1,8 @@
 package com.payment.ingestor.entity;
 
+import com.payment.ingestor.util.AccountStatus;
+import com.payment.ingestor.util.AccountType;
+import com.payment.ingestor.util.Currency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,13 +22,13 @@ public class AccountEntity {
     private String accountName;
 
     @Enumerated(EnumType.STRING)
-    private String accountType;
+    private AccountType accountType;
 
     @Enumerated(EnumType.STRING)
-    private String status;
+    private AccountStatus status;
 
-    private String currency;
-
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
 
     private LocalDate openedDate;
 

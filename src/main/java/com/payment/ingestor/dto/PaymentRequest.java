@@ -1,5 +1,6 @@
 package com.payment.ingestor.dto;
 
+import com.payment.ingestor.util.Currency;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class PaymentRequest {
 
     private Double amount;
 
-    private String currency;
+    private Currency currency;
 
     private String reference;
 
