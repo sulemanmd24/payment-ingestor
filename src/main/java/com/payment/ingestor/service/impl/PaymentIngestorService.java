@@ -42,7 +42,7 @@ public class PaymentIngestorService implements com.payment.ingestor.service.Paym
     @Override
     public String processPayment(final PaymentRequest paymentRequest) {
         if(paymentRequest.getDebitAccountId().equals(paymentRequest.getCreditAccountId())){
-            throw new PaymentIngestorException("Acount not  found", "ORD_404", 404);
+            throw new PaymentIngestorException("Account not  found", "ORD_404", 404);
         }
         Optional<AccountEntity> debitAccountId =   accountRepository.findById(paymentRequest.getDebitAccountId());
         Optional<AccountEntity> creditAccountId =   accountRepository.findById(paymentRequest.getCreditAccountId());
@@ -56,7 +56,7 @@ public class PaymentIngestorService implements com.payment.ingestor.service.Paym
             AccountEntity existCreditAccountId = creditAccountId.get();
             if(!existDebitAccountId.getStatus().equals(AccountStatus.ACTIVE)
                     || !existCreditAccountId.getStatus().equals(AccountStatus.ACTIVE) ){
-                throw new PaymentIngestorException("Account is suspended", "ORD_404", 404);
+                throw new PaymentIngestorException("Account is suspended", "ORD_422", 422);
             }else{
                 paymentIngestorProducer.createPayment(paymentRequest);
             }
