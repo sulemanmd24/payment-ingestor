@@ -1,0 +1,2 @@
+##localhost getAccoints
+GET http://localhost:8080/api/accounts/ghnv
