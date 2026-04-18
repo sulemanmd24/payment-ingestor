@@ -23,7 +23,7 @@ public class PaymentIngestorController {
     public ResponseEntity<Map<String, String>> createPayment(
             @Valid @RequestBody PaymentRequest request) {
 
-        String paymentId = paymentIngestorService.processPayment(request);
+        final String paymentId = paymentIngestorService.processPayment(request);
         return ResponseEntity
                 .accepted()
                 .body(Map.of("paymentId", paymentId));

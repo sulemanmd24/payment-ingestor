@@ -5,7 +5,9 @@ import com.payment.ingestor.dto.Account;
 import com.payment.ingestor.dto.PaymentRequest;
 import com.payment.ingestor.entity.AccountEntity;
 import com.payment.ingestor.exception.PaymentIngestorException;
+import com.payment.ingestor.kafka.PaymentIngestorProducer;
 import com.payment.ingestor.repository.AccountRepository;
+import com.payment.ingestor.util.AccountStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,10 @@ public class PaymentIngestorService implements com.payment.ingestor.service.Paym
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private PaymentIngestorProducer paymentIngestorProducer;
+
 
 
     @Override
@@ -34,7 +40,24 @@ public class PaymentIngestorService implements com.payment.ingestor.service.Paym
     }
 
     @Override
-    public String processPayment(PaymentRequest request) {
-        return "";
+    public String processPayment(final PaymentRequest paymentRequest) {
+        if(paymentRequest.getDebitAccountId().equals(paymentRequest.getCreditAccountId())){
+            throw new PaymentIngestorException("Acount not  found", "ORD_404", 404);
+        }
+        Optional<AccountEntity> debitAccountId =   accountRepository.findById(paymentRequest.getDebitAccountId());
+        Optional<AccountEntity> creditAccountId =   accountRepository.findById(paymentRequest.getCreditAccountId());
+        if (debitAccountId.isEmpty() && creditAccountId.isEmpty()) {
+//            throw new PaymentIngestorException("", );
+        }else{
+            AccountEntity existDebitAccountId = debitAccountId.get();
+            AccountEntity existCreditAccountId = creditAccountId.get();
+            if(!existDebitAccountId.getStatus().equals(AccountStatus.ACTIVE)
+                    && !existCreditAccountId.getStatus().equals(AccountStatus.ACTIVE) ){
+                throw new PaymentIngestorException("Acount not  found", "ORD_404", 404);
+            }else{
+                paymentIngestorProducer.createPayment(paymentRequest);
+            }
+        }
+        return paymentRequest.getPaymentId();
     }
 }

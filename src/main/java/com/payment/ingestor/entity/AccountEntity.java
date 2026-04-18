@@ -14,7 +14,6 @@ import java.time.LocalDate;
 public class AccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String accountId;
 
     private String accountName;
@@ -22,9 +21,11 @@ public class AccountEntity {
     @Enumerated(EnumType.STRING)
     private String accountType;
 
+    @Enumerated(EnumType.STRING)
     private String status;
 
     private String currency;
+
 
     private LocalDate openedDate;
 

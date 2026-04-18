@@ -12,15 +12,17 @@ import java.time.LocalDate;
 @Data
 public class PaymentRequest {
 
-    private String accountId;
+    private String paymentId;
 
-    private String accountName;
+    private String debitAccountId;
 
-    private String accountType;
+    private String creditAccountId;
 
-    private String status;
+    private Double amount;
 
     private String currency;
 
-    private LocalDate openedDate;
+    private String reference;
+
+    private LocalDate timestamp;
 }
