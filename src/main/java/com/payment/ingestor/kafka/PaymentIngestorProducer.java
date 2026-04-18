@@ -18,7 +18,7 @@ public class PaymentIngestorProducer {
 
 
     public void createPayment(PaymentRequest paymentRequest){
-        kafkaTemplate.send(PAYMENT_SUBMITTED_TOPIC,paymentRequest);
+        kafkaTemplate.send(PAYMENT_SUBMITTED_TOPIC, paymentRequest.getDebitAccountId(), paymentRequest);
         System.out.println("orderDetails -------"+paymentRequest);
     }
 }
