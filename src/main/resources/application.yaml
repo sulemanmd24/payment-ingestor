@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: payment-ingestor
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: "*"   # expose all actuator endpoints
+        base-path: /actuator
 
   datasource:
     driver-class-name: org.h2.Driver
