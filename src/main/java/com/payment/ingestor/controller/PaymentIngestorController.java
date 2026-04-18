@@ -2,6 +2,7 @@ package com.payment.ingestor.controller;
 
 
 import com.payment.ingestor.dto.Account;
+import com.payment.ingestor.dto.PaymentRequest;
 import com.payment.ingestor.service.PaymentIngestorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,7 @@ public class PaymentIngestorController {
     public ResponseEntity<Map<String, String>> createPayment(
             @Valid @RequestBody PaymentRequest request) {
 
-        String paymentId = service.processPayment(request);
-
+        String paymentId = paymentIngestorService.processPayment(request);
         return ResponseEntity
                 .accepted()
                 .body(Map.of("paymentId", paymentId));
