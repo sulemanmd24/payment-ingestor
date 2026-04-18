@@ -24,7 +24,9 @@ public class DataLoader {
             if (inputStream != null) {
                 // Change JSON mapping to AccountEntity
                 List<AccountEntity> accounts = mapper.readValue(inputStream, new TypeReference<>() {});
-                accountRepository.saveAll(accounts);
+                if (accountRepository.count() == 0) {
+                    accountRepository.saveAll(accounts);
+                }
                 System.out.println("✅ Accounts data loaded successfully!");
             } else {
                 System.out.println("⚠️ accounts.json file not found!");

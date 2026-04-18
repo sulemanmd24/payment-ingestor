@@ -46,14 +46,17 @@ public class PaymentIngestorService implements com.payment.ingestor.service.Paym
         }
         Optional<AccountEntity> debitAccountId =   accountRepository.findById(paymentRequest.getDebitAccountId());
         Optional<AccountEntity> creditAccountId =   accountRepository.findById(paymentRequest.getCreditAccountId());
-        if (debitAccountId.isEmpty() && creditAccountId.isEmpty()) {
-//            throw new PaymentIngestorException("", );
+        if (debitAccountId.isEmpty()) {
+            throw new PaymentIngestorException("Debit account can not be empty", "ORD_404", 404 );
+        }
+        if(creditAccountId.isEmpty()){
+            throw new PaymentIngestorException("Credit account can not be empty", "ORD_404", 404 );
         }else{
             AccountEntity existDebitAccountId = debitAccountId.get();
             AccountEntity existCreditAccountId = creditAccountId.get();
             if(!existDebitAccountId.getStatus().equals(AccountStatus.ACTIVE)
-                    && !existCreditAccountId.getStatus().equals(AccountStatus.ACTIVE) ){
-                throw new PaymentIngestorException("Acount not  found", "ORD_404", 404);
+                    || !existCreditAccountId.getStatus().equals(AccountStatus.ACTIVE) ){
+                throw new PaymentIngestorException("Account is suspended", "ORD_404", 404);
             }else{
                 paymentIngestorProducer.createPayment(paymentRequest);
             }
