@@ -1,0 +1,171 @@
+{
+  "_readme": "Valid and invalid JSON request bodies for POST /api/payments. Read this before designing your PaymentRequest DTO. The _expectedStatus and _expectedViolations fields show exactly what your API must return for each request.",
+
+  "validRequests": {
+
+    "normalProcessed": {
+      "_description": "Standard GBP payment between two ACTIVE accounts. Expect 202 Accepted. PaymentOutcome published to payments.processed with status PROCESSED. Row inserted in payment_outcomes. Use for Judge Scenario 1.",
+      "paymentId":       "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "debitAccountId":  "20-15-88/43917265",
+      "creditAccountId": "30-91-44/87654321",
+      "amount":          4750.00,
+      "currency":        "GBP",
+      "reference":       "INVOICE INV-10044",
+      "timestamp":       "2024-10-28T09:30:00Z"
+    },
+
+    "heldPayment": {
+      "_description": "Amount exceeds £250,000. Expect 202 from ingestor. PaymentOutcome on payments.processed with status HELD. payment_outcomes row with status HELD. Use for Judge Scenario 5.",
+      "paymentId":       "a3bb189e-8bf9-3888-9b79-3fc4e4a7b8c1",
+      "debitAccountId":  "40-47-84/55501234",
+      "creditAccountId": "60-83-71/34561234",
+      "amount":          300000.00,
+      "currency":        "GBP",
+      "reference":       "CONTRACT PMT Q4",
+      "timestamp":       "2024-10-29T08:00:00Z"
+    },
+
+    "rejectedSameAccount": {
+      "_description": "debitAccountId == creditAccountId. Expect 202 from ingestor (structurally valid). Processor routes to payments.dlq with status REJECTED. payment_outcomes row with status REJECTED. Use for Judge Scenario 6.",
+      "paymentId":       "d290f1ee-6c54-4b01-90e6-d701748f0851",
+      "debitAccountId":  "11-44-77/66778899",
+      "creditAccountId": "11-44-77/66778899",
+      "amount":          12500.00,
+      "currency":        "GBP",
+      "reference":       "INTERNAL REF-1001",
+      "timestamp":       "2024-10-30T10:00:00Z"
+    },
+
+    "minimumFields": {
+      "_description": "Valid payment with no optional reference field. Expect 202. The reference field is optional — its absence must NOT cause a 400.",
+      "paymentId":       "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+      "debitAccountId":  "09-01-28/11223344",
+      "creditAccountId": "77-22-55/24681357",
+      "amount":          250.00,
+      "currency":        "GBP",
+      "timestamp":       "2024-10-27T16:45:00Z"
+    },
+
+    "eurPayment": {
+      "_description": "EUR payment. Currency must accept any 3-character ISO code.",
+      "paymentId":       "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "debitAccountId":  "55-66-33/98765432",
+      "creditAccountId": "77-22-55/13579246",
+      "amount":          8900.50,
+      "currency":        "EUR",
+      "reference":       "SUPPLIER PMT 4421",
+      "timestamp":       "2024-10-26T14:20:00Z"
+    }
+  },
+
+  "invalidRequests": {
+
+    "accountNotFound_debit": {
+      "_description": "debitAccountId does not exist in the accounts table. Expect 404. Use for Judge Scenario 2. Do NOT use sample-invalid-account.json — that file is specifically for this scenario.",
+      "_expectedStatus": 404,
+      "_expectedError":  "Debit account not found: 99-99-99/00000000",
+      "paymentId":       "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "debitAccountId":  "99-99-99/00000000",
+      "creditAccountId": "30-91-44/87654321",
+      "amount":          1500.00,
+      "currency":        "GBP",
+      "timestamp":       "2024-10-28T09:00:00Z"
+    },
+
+    "accountNotFound_credit": {
+      "_description": "creditAccountId does not exist. Expect 404.",
+      "_expectedStatus": 404,
+      "_expectedError":  "Credit account not found: 99-99-99/11111111",
+      "paymentId":       "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+      "debitAccountId":  "20-15-88/43917265",
+      "creditAccountId": "99-99-99/11111111",
+      "amount":          2000.00,
+      "currency":        "GBP",
+      "timestamp":       "2024-10-28T09:00:00Z"
+    },
+
+    "accountSuspended": {
+      "_description": "debitAccountId 60-83-71/78900001 has status SUSPENDED in accounts.json. Expect 422 with error: Account is suspended: 60-83-71/78900001.",
+      "_expectedStatus": 422,
+      "_expectedError":  "Account is suspended: 60-83-71/78900001",
+      "paymentId":       "6ba7b812-9dad-11d1-80b4-00c04fd430c8",
+      "debitAccountId":  "60-83-71/78900001",
+      "creditAccountId": "30-91-44/87654321",
+      "amount":          500.00,
+      "currency":        "GBP",
+      "timestamp":       "2024-10-28T09:00:00Z"
+    },
+
+    "multipleViolations_scenario3": {
+      "_description": "Three simultaneous Bean Validation failures: no currency, negative amount, future timestamp. This is the exact payload for Judge Scenario 3. Expect HTTP 400 with ALL THREE violations in a single response.",
+      "_expectedStatus": 400,
+      "_expectedViolations": [
+        { "field": "currency",  "message": "Currency must be a 3-character ISO code" },
+        { "field": "amount",    "message": "Amount must be greater than 0" },
+        { "field": "timestamp", "message": "Timestamp must not be in the future" }
+      ],
+      "paymentId":       "6ba7b813-9dad-11d1-80b4-00c04fd430c8",
+      "debitAccountId":  "09-01-28/55667788",
+      "creditAccountId": "88-99-11/63819274",
+      "amount":          -100.00,
+      "timestamp":       "2099-01-01T00:00:00Z"
+    },
+
+    "duplicatePaymentId_scenario4": {
+      "_description": "Same paymentId as validRequests.normalProcessed. Submit the normal request first, then submit this. Expect HTTP 409 on the second submission. The violations array must be empty. Use for Judge Scenario 4.",
+      "_expectedStatus": 409,
+      "_expectedError":  "Duplicate payment ID — request already accepted",
+      "_expectedViolations": [],
+      "_note": "Uses the same paymentId as validRequests.normalProcessed: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "paymentId":       "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "debitAccountId":  "20-15-88/43917265",
+      "creditAccountId": "30-91-44/87654321",
+      "amount":          4750.00,
+      "currency":        "GBP",
+      "timestamp":       "2024-10-28T09:30:00Z"
+    },
+
+    "negativeAmount": {
+      "_description": "Negative amount violates @DecimalMin(\"0.01\"). Expect 400.",
+      "_expectedStatus": 400,
+      "_expectedViolations": [
+        { "field": "amount", "message": "Amount must be greater than 0" }
+      ],
+      "paymentId":       "6ba7b814-9dad-11d1-80b4-00c04fd430c8",
+      "debitAccountId":  "22-33-44/47382910",
+      "creditAccountId": "88-99-11/91827364",
+      "amount":          -250.00,
+      "currency":        "GBP",
+      "timestamp":       "2024-10-28T09:00:00Z"
+    },
+
+    "currencyTooLong": {
+      "_description": "Currency is 4 characters. Violates @Size(min=3, max=3). Expect 400.",
+      "_expectedStatus": 400,
+      "_expectedViolations": [
+        { "field": "currency", "message": "Currency must be a 3-character ISO code" }
+      ],
+      "paymentId":       "6ba7b815-9dad-11d1-80b4-00c04fd430c8",
+      "debitAccountId":  "40-47-84/99887766",
+      "creditAccountId": "09-01-28/11223344",
+      "amount":          1000.00,
+      "currency":        "GBPE",
+      "timestamp":       "2024-10-28T09:00:00Z"
+    },
+
+    "referenceTooLong": {
+      "_description": "Reference exceeds 35 characters. Expect 400.",
+      "_expectedStatus": 400,
+      "_expectedViolations": [
+        { "field": "reference", "message": "Reference must not exceed 35 characters" }
+      ],
+      "paymentId":       "6ba7b816-9dad-11d1-80b4-00c04fd430c8",
+      "debitAccountId":  "55-66-33/10293847",
+      "creditAccountId": "22-33-44/82736450",
+      "amount":          3000.00,
+      "currency":        "GBP",
+      "reference":       "THIS REFERENCE EXCEEDS THE MAXIMUM ALLOWED LENGTH OF THIRTY-FIVE CHARACTERS",
+      "timestamp":       "2024-10-28T09:00:00Z"
+    }
+  }
+}

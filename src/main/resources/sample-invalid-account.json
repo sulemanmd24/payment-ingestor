@@ -1,0 +1,15 @@
+{
+  "_readme": "A payment request where BOTH debitAccountId and creditAccountId do not exist in the accounts table. Use this to verify your 404 account-not-found response in Judge Scenario 2. POST this to /api/payments — expect HTTP 404.",
+
+  "_expectedStatus": 404,
+  "_expectedError":  "Debit account not found: 99-99-99/00000000",
+  "_note": "The ingestor must check debitAccountId first. If debit is not found, return 404 immediately without checking creditAccountId.",
+
+  "paymentId":       "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed",
+  "debitAccountId":  "99-99-99/00000000",
+  "creditAccountId": "88-88-88/11111111",
+  "amount":          5000.00,
+  "currency":        "GBP",
+  "reference":       "UNKNOWN ACCOUNT TEST",
+  "timestamp":       "2024-10-28T11:00:00Z"
+}
